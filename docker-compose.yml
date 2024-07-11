@@ -4,7 +4,7 @@ services:
   frontend:
     image: frontend-image
     build:
-      context:  ./frontend
+      context:   C:\PROJECTS\pipeline\PFA-CI-CD\frontend\sbr-stage
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
@@ -17,7 +17,7 @@ services:
   backend:
     image: springbootimage
     build:
-      context:  ./spring-boot-project
+      context: C:\PROJECTS\pipeline\PFA-CI-CD\spring-boot-projeect
       dockerfile: Dockerfile
     ports:
       - "9192:9192"
