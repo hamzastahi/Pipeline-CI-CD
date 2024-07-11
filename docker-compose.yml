@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  frontend:
+    image: frontend-image
+    build:
+      context:  ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+
+  backend:
+    image: springbootimage
+    build:
+      context:  ./spring-boot-project
+      dockerfile: Dockerfile
+    ports:
+      - "9192:9192"
+    volumes:
+      - ./spring-boot-project:/app
