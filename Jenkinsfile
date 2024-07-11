@@ -1,19 +1,19 @@
 pipeline{
   agent any
   stages{
-    satge("build"){
+    stage("build"){
       steps{
         echo 'build the application....'
         
       }
     }
-    satge("test"){
+    stage("test"){
       steps{
                 echo 'test the application.....'
 
       }
     }
-    satge("deploy"){
+    stage("deploy"){
       steps{
                 echo 'deploy the application....'
 
