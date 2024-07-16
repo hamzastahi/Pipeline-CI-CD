@@ -1,13 +1,20 @@
-FROM node:20-alpine
+# Use the official Node.js image as the base image
+FROM node:20
 
+# Create and set the working directory
 WORKDIR /app
 
-COPY package.json ./
+# Copy package.json and package-lock.json to the working directory
+COPY package.json package-lock.json ./
 
-RUN  npm install
+# Install the dependencies
+RUN npm install
 
-COPY  . .
+# Copy the rest of the application files to the working directory
+COPY . .
 
+# Expose the port the app runs on
 EXPOSE 3000
 
-CMD [ "npm","start" ]
+# Start the application
+CMD ["npm", "start"]
