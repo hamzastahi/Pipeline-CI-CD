@@ -2,25 +2,25 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE_BACKEND = 'votre-utilisateur/backend-app:latest'
-        DOCKER_IMAGE_FRONTEND = 'votre-utilisateur/frontend-app:latest'
-        DOCKER_IMAGE_DB = 'mysql:latest'
+        DOCKER_IMAGE_BACKEND = 'fatimazahraerhmaritlemcani132/pfa-ci-cd-backend:v1.0'
+        DOCKER_IMAGE_FRONTEND = 'fatimazahraerhmaritlemcani132/pfa-ci-cd-frontend:v1.0'
+        DOCKER_IMAGE_DB = 'fatimazahraerhmaritlemcani132/mysql:v1.0'
     }
 
     stages {
         stage('Checkout') {
             steps {
-                git 'https://votre-repo-git.git'
+                git 'https://github.com/fatitlem/Pipeline-CI-CD.git'
             }
         }
 
         stage('Build Backend') {
             steps {
                 script {
-                    docker.image('maven:3.6.3-jdk-11').inside {
-                        sh 'mvn clean package -f backend/pom.xml'
+                    docker.image('maven:3.9.8-jdk-17').inside {
+                        sh 'mvn clean package -f spring-boot-projeect/pom.xml'
                     }
-                    docker.build("${env.DOCKER_IMAGE_BACKEND}", 'backend')
+                    docker.build("${env.DOCKER_IMAGE_BACKEND}", 'spring-boot-projeect')
                 }
             }
         }
@@ -28,21 +28,11 @@ pipeline {
         stage('Build Frontend') {
             steps {
                 script {
-                    docker.image('node:14').inside {
-                        sh 'cd frontend && npm install && npm run build'
+                    docker.image('node:20').inside {
+                        sh 'npm install --prefix frontend/sbr-stage'
+                        sh 'npm run build --prefix frontend/sbr-stage'
                     }
-                    docker.build("${env.DOCKER_IMAGE_FRONTEND}", 'frontend')
-                }
-            }
-        }
-
-        stage('Push Images') {
-            steps {
-                script {
-                    docker.withRegistry('https://index.docker.io/v1/', 'docker-hub-credentials') {
-                        docker.image("${env.DOCKER_IMAGE_BACKEND}").push()
-                        docker.image("${env.DOCKER_IMAGE_FRONTEND}").push()
-                    }
+                    docker.build("${env.DOCKER_IMAGE_FRONTEND}", 'frontend/sbr-stage')
                 }
             }
         }
