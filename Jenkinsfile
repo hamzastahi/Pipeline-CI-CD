@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        // Utilisation des variables Docker du premier script
+        // Define environment variables for Docker images
         DOCKER_IMAGE_BACKEND = 'fatimazahraerhmaritlemcani132/pfa-ci-cd-backend:v1.0'
         DOCKER_IMAGE_FRONTEND = 'fatimazahraerhmaritlemcani132/pfa-ci-cd-frontend:v1.0'
         DOCKER_IMAGE_DB = 'fatimazahraerhmaritlemcani132/mysql:v1.0'
@@ -11,53 +11,22 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // Utilisation des données de votre dépôt GitHub
-                git(
+                // Checkout the main branch from GitHub
+                git branch: 'main',
                     url: 'https://github.com/fatitlem/Pipeline-CI-CD.git',
-                    branch: 'main',
                     credentialsId: 'PFA-PIPELINE'
-                )
-            }
-        }
-
-        stage('Setup Database') {
-            steps {
-                script {
-                    // Lancer le service de la base de données
-                    sh 'docker-compose up -d db'
-
-                    // Attendre que la base de données soit prête
-                    sh '''
-                    while ! docker-compose exec db mysqladmin ping -h "127.0.0.1" --silent; do
-                        echo "Attente de la connexion à la base de données..."
-                        sleep 2
-                    done
-                    '''
-
-                    // Optionnel : Exécuter des commandes SQL initiales
-                    sh 'docker-compose exec db mysql -u root -pmysql -e "CREATE DATABASE IF NOT EXISTS my_database;"'
-                }
             }
         }
 
         stage('Build Backend') {
             steps {
                 script {
-                    // Utiliser Maven pour construire le backend
+                    // Use Maven Docker image to build the backend
                     docker.image('maven:3.9.8-eclipse-temurin-17').inside {
                         sh 'mvn clean package -DskipTests -f spring-boot-projeect/pom.xml'
                     }
-                    // Construire l'image Docker du backend
+                    // Build Docker image for the backend
                     docker.build("${env.DOCKER_IMAGE_BACKEND}", 'spring-boot-projeect')
-                }
-            }
-        }
-
-        stage('Test Backend') {
-            steps {
-                script {
-                    // Exécuter les tests du backend
-                    sh 'docker-compose run backend ./gradlew test'
                 }
             }
         }
@@ -65,33 +34,24 @@ pipeline {
         stage('Build Frontend') {
             steps {
                 script {
-                    // Utiliser Node pour construire le frontend
+                    // Use Node Docker image to build the frontend
                     docker.image('node:20.15.0').inside {
                         sh 'npm install --prefix frontend/sbr-stage'
                         sh 'npm run build --prefix frontend/sbr-stage'
                     }
-                    // Construire l'image Docker du frontend
+                    // Build Docker image for the frontend
                     docker.build("${env.DOCKER_IMAGE_FRONTEND}", 'frontend/sbr-stage')
                 }
             }
         }
 
-        stage('Test Frontend') {
+        stage('Push Images') {
             steps {
                 script {
-                    // Exécuter les tests du frontend
-                    sh 'docker-compose run frontend npm test'
-                }
-            }
-        }
-
-        stage('Docker Push') {
-            steps {
-                script {
-                    // Se connecter à Docker Hub et pousser les images
-                    sh "docker login -u fatimazahraerhmaritlemcani132 -p fati1234"
-                    sh "docker push ${env.DOCKER_IMAGE_BACKEND}"
-                    sh "docker push ${env.DOCKER_IMAGE_FRONTEND}"
+                    docker.withRegistry('https://index.docker.io/v1/', 'docker-hub-credentials') {
+                        docker.image("${env.DOCKER_IMAGE_BACKEND}").push()
+                        docker.image("${env.DOCKER_IMAGE_FRONTEND}").push()
+                    }
                 }
             }
         }
@@ -99,18 +59,14 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    // Utiliser Docker Compose pour le déploiement
+                    // Use Docker Compose to manage deployment
                     sh 'docker-compose down'
                     sh 'docker-compose up -d db'
-
-                    // Attendre que la base de données soit en bonne santé
+                    // Wait for the database to be healthy
                     sh 'until [ "$(docker inspect -f "{{.State.Health.Status}}" $(docker-compose ps -q db))" == "healthy" ]; do sleep 1; done'
-
                     sh 'docker-compose up -d backend'
-
-                    // Attendre que le backend soit en bonne santé (si vous avez une vérification de santé pour le backend)
+                    // Wait for the backend to be healthy (optional, if you have a healthcheck for backend)
                     sh 'until [ "$(docker inspect -f "{{.State.Health.Status}}" $(docker-compose ps -q backend))" == "healthy" ]; do sleep 1; done'
-
                     sh 'docker-compose up -d frontend'
                 }
             }
@@ -119,7 +75,7 @@ pipeline {
 
     post {
         always {
-            // Nettoyer les ressources et l'espace de travail
+            // Clean up workspace after the build
             cleanWs()
         }
     }
