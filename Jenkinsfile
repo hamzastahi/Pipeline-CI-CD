@@ -18,43 +18,19 @@ pipeline {
             }
         }
 
-        stage('Build Backend') {
+        stage('Build ') {
             steps {
                 script {
                     // Use Maven Docker image to build the backend
-                    docker.image('maven:3.9.8-eclipse-temurin-17').inside {
-                        sh 'mvn clean package -DskipTests -f spring-boot-projeect/pom.xml'
+
+                        sh 'docker-compose up -d .'
                     }
-                    // Build Docker image for the backend
-                    docker.build("${env.DOCKER_IMAGE_BACKEND}", 'spring-boot-projeect')
+
                 }
             }
         }
 
-        stage('Build Frontend') {
-            steps {
-                script {
-                    // Use Node Docker image to build the frontend
-                    docker.image('node:20.15.0').inside {
-                        sh 'npm install --prefix frontend/sbr-stage'
-                        sh 'npm run build --prefix frontend/sbr-stage'
-                    }
-                    // Build Docker image for the frontend
-                    docker.build("${env.DOCKER_IMAGE_FRONTEND}", 'frontend/sbr-stage')
-                }
-            }
-        }
-
-        stage('Push Images') {
-            steps {
-                script {
-                    docker.withRegistry('https://index.docker.io/v1/', 'docker-hub-credentials') {
-                        docker.image("${env.DOCKER_IMAGE_BACKEND}").push()
-                        docker.image("${env.DOCKER_IMAGE_FRONTEND}").push()
-                    }
-                }
-            }
-        }
+      
 
         stage('Deploy') {
             steps {
