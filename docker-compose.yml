@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   db:
-    image: mysql:8
+    image: fatimazahraerhmaritlemcani132/mysql:v1.0
     restart: always
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent"]
@@ -21,11 +21,10 @@ services:
       - spring-mysql
 
   backend:
-    build:
-      context: ./spring-boot-projeect
-      dockerfile: Dockerfile
+    image: fatimazahraerhmaritlemcani132/pfa-ci-cd-backend:v1.0
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     ports:
       - "9192:9192"
     volumes:
@@ -39,9 +38,7 @@ services:
       - react-spring
 
   frontend:
-    build:
-      context: ./frontend/sbr-stage
-      dockerfile: Dockerfile
+    image: fatimazahraerhmaritlemcani132/pfa-ci-cd-frontend:v1.0
     ports:
       - "3000:3000"
     volumes:
@@ -51,8 +48,6 @@ services:
       - backend
     networks:
       - react-spring
-
-
 
 volumes:
   mysql: {}
