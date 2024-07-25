@@ -27,10 +27,10 @@ pipeline {
                     }
 
                 }
-            }
-        }
+           }
 
-      
+
+
 
         stage('Deploy') {
             steps {
