@@ -18,6 +18,17 @@ pipeline {
             }
         }
 
+        stage('Build Database') {
+            steps {
+                script {
+                    // Build Docker image for the database
+                    sh "docker build -t ${env.DOCKER_IMAGE_DB} database"
+                    // Run Docker container for the database
+                    sh "docker run -d --name mysql-db -e MYSQL_ROOT_PASSWORD=rootpassword ${env.DOCKER_IMAGE_DB}"
+                }
+            }
+        }
+
         stage('Build Backend') {
             steps {
                 script {
