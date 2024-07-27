@@ -26,7 +26,7 @@ pipeline {
                         sh 'mvn clean package -f spring-boot-projeect/pom.xml'
                     }
                     // Build Docker image for the backend
-                    docker.build("${env.DOCKER_IMAGE_BACKEND}", 'spring-boot-projeect')
+                    sh "docker build -t ${env.DOCKER_IMAGE_BACKEND} spring-boot-projeect"
                 }
             }
         }
@@ -40,7 +40,7 @@ pipeline {
                         sh 'npm run build --prefix frontend/sbr-stage'
                     }
                     // Build Docker image for the frontend
-                    docker.build("${env.DOCKER_IMAGE_FRONTEND}", 'frontend/sbr-stage')
+                    sh "docker build -t ${env.DOCKER_IMAGE_FRONTEND} frontend/sbr-stage"
                 }
             }
         }
