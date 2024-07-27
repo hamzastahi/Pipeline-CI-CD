@@ -18,17 +18,6 @@ pipeline {
             }
         }
 
-        stage('Build Database') {
-            steps {
-                script {
-                    // Build Docker image for the database
-                    sh "docker build -t ${env.DOCKER_IMAGE_DB} database"
-                    // Run Docker container for the database
-                    sh "docker run -d --name mysql-db -e MYSQL_ROOT_PASSWORD=rootpassword ${env.DOCKER_IMAGE_DB}"
-                }
-            }
-        }
-
         stage('Build Backend') {
             steps {
                 script {
@@ -59,6 +48,9 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
+                    // Pull the database image from Docker Hub
+                    sh "docker pull ${env.DOCKER_IMAGE_DB}"
+
                     // Use Docker Compose to manage deployment
                     sh 'docker compose down'
                     sh 'docker compose up -d'
