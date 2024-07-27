@@ -18,12 +18,29 @@ pipeline {
             }
         }
 
-        stage('Build') {
+        stage('Build Backend') {
             steps {
                 script {
-                    // Assuming the Docker images are already built and pushed
-                    // If not, you should include build steps here
-                    // Example: sh 'docker build -t ${DOCKER_IMAGE_BACKEND} ./backend'
+                    // Use Maven Docker image to build the backend
+                    docker.image('maven:3.9.8-jdk-17').inside {
+                        sh 'mvn clean package -f spring-boot-projeect/pom.xml'
+                    }
+                    // Build Docker image for the backend
+                    docker.build("${env.DOCKER_IMAGE_BACKEND}", 'spring-boot-projeect')
+                }
+            }
+        }
+
+        stage('Build Frontend') {
+            steps {
+                script {
+                    // Use Node Docker image to build the frontend
+                    docker.image('node:20').inside {
+                        sh 'npm install --prefix frontend/sbr-stage'
+                        sh 'npm run build --prefix frontend/sbr-stage'
+                    }
+                    // Build Docker image for the frontend
+                    docker.build("${env.DOCKER_IMAGE_FRONTEND}", 'frontend/sbr-stage')
                 }
             }
         }
@@ -33,25 +50,7 @@ pipeline {
                 script {
                     // Use Docker Compose to manage deployment
                     sh 'docker compose down'
-                    sh 'docker compose up -d db'
-
-                    // Wait for the database to be healthy
-                    sh '''
-                        until [ "$(docker inspect -f "{{.State.Health.Status}}" $(docker compose ps -q db))" == "healthy" ]; do
-                            sleep 1
-                        done
-                    '''
-
-                    sh 'docker compose up -d backend'
-
-                    // Wait for the backend to be healthy (optional, if you have a healthcheck for backend)
-                    sh '''
-                        until [ "$(docker inspect -f "{{.State.Health.Status}}" $(docker compose ps -q backend))" == "healthy" ]; do
-                            sleep 1
-                        done
-                    '''
-
-                    sh 'docker compose up -d frontend'
+                    sh 'docker compose up -d'
                 }
             }
         }
