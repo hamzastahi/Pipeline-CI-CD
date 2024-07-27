@@ -22,7 +22,7 @@ pipeline {
             steps {
                 script {
                     // Use Maven Docker image to build the backend
-                    docker.image('maven:3.9.8-jdk-17').inside {
+                    docker.image('maven:3.9.8-eclipse-temurin-17').inside {
                         sh 'mvn clean package -f spring-boot-projeect/pom.xml'
                     }
                     // Build Docker image for the backend
@@ -35,7 +35,7 @@ pipeline {
             steps {
                 script {
                     // Use Node Docker image to build the frontend
-                    docker.image('node:20').inside {
+                    docker.image('node:20.15.0').inside {
                         sh 'npm install --prefix frontend/sbr-stage'
                         sh 'npm run build --prefix frontend/sbr-stage'
                     }
