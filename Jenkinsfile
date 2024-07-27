@@ -23,7 +23,7 @@ pipeline {
                 script {
                     // Use Maven Docker image to build the backend
 
-                        sh 'docker-compose up -d .'
+                        sh 'docker compose up -d .'
                     }
 
                 }
@@ -36,14 +36,14 @@ pipeline {
             steps {
                 script {
                     // Use Docker Compose to manage deployment
-                    sh 'docker-compose down'
-                    sh 'docker-compose up -d db'
+                    sh 'docker compose down'
+                    sh 'docker compose up -d db'
                     // Wait for the database to be healthy
-                    sh 'until [ "$(docker inspect -f "{{.State.Health.Status}}" $(docker-compose ps -q db))" == "healthy" ]; do sleep 1; done'
-                    sh 'docker-compose up -d backend'
+                    sh 'until [ "$(docker inspect -f "{{.State.Health.Status}}" $(docker compose ps -q db))" == "healthy" ]; do sleep 1; done'
+                    sh 'docker compose up -d backend'
                     // Wait for the backend to be healthy (optional, if you have a healthcheck for backend)
-                    sh 'until [ "$(docker inspect -f "{{.State.Health.Status}}" $(docker-compose ps -q backend))" == "healthy" ]; do sleep 1; done'
-                    sh 'docker-compose up -d frontend'
+                    sh 'until [ "$(docker inspect -f "{{.State.Health.Status}}" $(docker compose ps -q backend))" == "healthy" ]; do sleep 1; done'
+                    sh 'docker compose up -d frontend'
                 }
             }
         }
