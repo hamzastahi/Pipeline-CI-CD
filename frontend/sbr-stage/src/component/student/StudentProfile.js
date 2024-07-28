@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 
@@ -13,11 +13,7 @@ const StudentProfile = () => {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState("");
 
-	useEffect(() => {
-		loadStudent();
-	}, []);
-
-	const loadStudent = async () => {
+	const loadStudent = useCallback(async () => {
 		try {
 			const result = await axios.get(`http://localhost:9192/students/student/${id}`);
 			setStudent(result.data);
@@ -26,7 +22,11 @@ const StudentProfile = () => {
 			setError("Failed to fetch student data.");
 			setLoading(false);
 		}
-	};
+	}, [id]);
+
+	useEffect(() => {
+		loadStudent();
+	}, [loadStudent]);
 
 	if (loading) {
 		return <p>Loading...</p>;
