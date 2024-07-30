@@ -21,9 +21,7 @@ pipeline {
         stage('Build Backend') {
             steps {
                 script {
-
-
-                   sh "docker run -p 9192:9192 ${env.DOCKER_IMAGE_FRONTEND} --name spring-boot-projeect"
+                    sh "docker run -d --name backend -p 9192:9192 ${env.DOCKER_IMAGE_BACKEND}"
                 }
             }
         }
