@@ -18,6 +18,17 @@ pipeline {
             }
         }
 
+        stage('Build Database') {
+            steps {
+                script {
+                    // Remove existing database container if it exists
+                    sh 'docker rm -f db-1 || true'
+                    // Run the new database container
+                    sh "docker run -d --name db-1 -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=mydb -p 3306:3306 ${env.DOCKER_IMAGE_DB}"
+                }
+            }
+        }
+
         stage('Build Backend') {
             steps {
                 script {
@@ -43,16 +54,9 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    // Pull the database image from Docker Hub
-                    sh "docker pull ${env.DOCKER_IMAGE_DB}"
-
-                    // Remove existing database container if it exists
-                    sh 'docker rm -f db-1 || true'
-                    // Run the new database container
-                    sh "docker run -d --name db-1 -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=mydb -p 3306:3306 ${env.DOCKER_IMAGE_DB}"
-
-                    // Use Docker Compose to manage other parts of the deployment, if necessary
-                    sh 'docker compose up -d'
+                    // If you have a docker-compose.yml file, ensure it's in the right directory
+                    // and use Docker Compose to manage deployment
+                    sh 'docker-compose up -d' // Note: Ensure you have a docker-compose.yml file in your workspace
                 }
             }
         }
