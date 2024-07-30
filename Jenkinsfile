@@ -21,12 +21,8 @@ pipeline {
         stage('Build Backend') {
             steps {
                 script {
-                    // Use Maven Docker image to build the backend
-                    docker.image('maven:3.9.8-eclipse-temurin-17').inside {
-                        sh 'mvn clean package -DskipTests -f spring-boot-projeect/pom.xml'
-                    }
                     // Build Docker image for the backend
-                    sh "docker build -t ${env.DOCKER_IMAGE_BACKEND} spring-boot-projeect"
+                    sh "docker run -d -p 9192:9192 --name backend ${env.DOCKER_IMAGE_BACKEND}"
                 }
             }
         }
@@ -34,13 +30,8 @@ pipeline {
         stage('Build Frontend') {
             steps {
                 script {
-                    // Use Node Docker image to build the frontend
-                    docker.image('node:20.15.0').inside {
-                        sh 'npm install --prefix frontend/sbr-stage'
-                        sh 'npm run build --prefix frontend/sbr-stage'
-                    }
                     // Build Docker image for the frontend
-                    sh "docker build -t ${env.DOCKER_IMAGE_FRONTEND} frontend/sbr-stage"
+                    sh "docker run -d -p 3000:3000 --name frontend ${env.DOCKER_IMAGE_FRONTEND}"
                 }
             }
         }
@@ -52,8 +43,7 @@ pipeline {
                     sh "docker pull ${env.DOCKER_IMAGE_DB}"
 
                     // Use Docker Compose to manage deployment
-                    sh 'docker compose down'
-                    sh 'docker compose up -d'
+                    sh 'docker-compose -f /var/jenkins_home/workspace/PFA-PIPELINE/docker-compose.yml up -d'
                 }
             }
         }
