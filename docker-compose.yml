@@ -38,7 +38,7 @@ services:
       - react-spring
 
   frontend:
-    image: fatimazahraerhmaritlemcani132/pfa-ci-cd-frontend:v1.0
+    image: fatimazahraerhmaritlemcani132/frontend-pipeline:v1.0
     ports:
       - "3000:3000"
     volumes:
