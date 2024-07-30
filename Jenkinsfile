@@ -4,7 +4,7 @@ pipeline {
     environment {
         // Define environment variables for Docker images
         DOCKER_IMAGE_BACKEND = 'fatimazahraerhmaritlemcani132/pfa-ci-cd-backend:v1.0'
-        DOCKER_IMAGE_FRONTEND = 'fatimazahraerhmaritlemcani132/frontend-pipeline:v1.0'
+        DOCKER_IMAGE_FRONTEND = 'fatimazahraerhmaritlemcani132/pfa-ci-cd-frontend:v1.0'
         DOCKER_IMAGE_DB = 'fatimazahraerhmaritlemcani132/mysql:v1.0'
     }
 
