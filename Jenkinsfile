@@ -23,8 +23,6 @@ pipeline {
                 script {
                     // Remove existing database container if it exists
                     sh 'docker rm -f db-1 || true'
-                    // Pull the database image from Docker Hub
-                    sh "docker pull ${env.DOCKER_IMAGE_DB}"
                     // Run the new database container
                     sh 'docker run -d --name db-1 -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=mydb -p 3306:3306 ${env.DOCKER_IMAGE_DB}'
                 }
