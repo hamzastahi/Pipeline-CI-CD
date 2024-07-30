@@ -21,10 +21,8 @@ pipeline {
         stage('Build Database') {
             steps {
                 script {
-                    // Remove existing database container if it exists
-                    sh 'docker rm -f db-1 || true'
-                    // Run the new database container
-                    sh "docker run -d --name db-1 -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=mydb -p 3306:3306 ${env.DOCKER_IMAGE_DB}"
+
+                      sh "docker pull ${env.DOCKER_IMAGE_DB}"
                 }
             }
         }
@@ -32,10 +30,8 @@ pipeline {
         stage('Build Backend') {
             steps {
                 script {
-                    // Remove existing backend container if it exists
-                    sh 'docker rm -f backend || true'
-                    // Run the new backend container
-                    sh "docker run -d --name backend -p 9192:9192 ${env.DOCKER_IMAGE_BACKEND}"
+
+                    sh "docker pull ${env.DOCKER_IMAGE_BACKEND}"
                 }
             }
         }
@@ -43,10 +39,8 @@ pipeline {
         stage('Build Frontend') {
             steps {
                 script {
-                    // Remove existing frontend container if it exists
-                    sh 'docker rm -f frontend || true'
-                    // Run the new frontend container
-                    sh "docker run -d --name frontend -p 3000:3000 ${env.DOCKER_IMAGE_FRONTEND}"
+
+                     sh "docker pull ${env.DOCKER_IMAGE_FRONTEND}"
                 }
             }
         }
@@ -54,11 +48,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    // Stop and remove existing containers
-                               sh 'docker-compose down || true'
-                               // Remove any existing containers that may conflict
-                               sh 'docker rm -f db-1 backend frontend || true'
-                               // Recreate and start containers using Docker Compose
+                   
                                sh 'docker compose up -d'// Note: Ensure you have a docker-compose.yml file in your workspace
                 }
             }
