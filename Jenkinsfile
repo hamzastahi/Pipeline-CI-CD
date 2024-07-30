@@ -18,12 +18,26 @@ pipeline {
             }
         }
 
+        stage('Start Database') {
+            steps {
+                script {
+                    // Remove existing database container if it exists
+                    sh 'docker rm -f db-1 || true'
+                    // Pull the database image from Docker Hub
+                    sh "docker pull ${env.DOCKER_IMAGE_DB}"
+                    // Run the new database container
+                    sh 'docker run -d --name db-1 -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=mydb -p 3306:3306 ${env.DOCKER_IMAGE_DB}'
+                }
+            }
+        }
+
         stage('Build Backend') {
             steps {
                 script {
-
-
-                   sh "docker run -p 9192:99192 ${env.DOCKER_IMAGE_FRONTEND} --name backend"
+                    // Remove existing backend container if it exists
+                    sh 'docker rm -f backend || true'
+                    // Run the new backend container
+                    sh "docker run -d -p 9192:9192 --name backend ${env.DOCKER_IMAGE_BACKEND}"
                 }
             }
         }
@@ -31,8 +45,10 @@ pipeline {
         stage('Build Frontend') {
             steps {
                 script {
-
-                    sh "docker run -p 3000:3000 ${env.DOCKER_IMAGE_FRONTEND} --name frontend/sbr-stage"
+                    // Remove existing frontend container if it exists
+                    sh 'docker rm -f frontend || true'
+                    // Run the new frontend container
+                    sh "docker run -d -p 3000:3000 --name frontend ${env.DOCKER_IMAGE_FRONTEND}"
                 }
             }
         }
@@ -40,9 +56,6 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    // Pull the database image from Docker Hub
-                    sh "docker pull ${env.DOCKER_IMAGE_DB}"
-
                     // Use Docker Compose to manage deployment
                     sh 'docker compose up -d'
                 }
