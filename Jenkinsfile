@@ -54,9 +54,12 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    // If you have a docker-compose.yml file, ensure it's in the right directory
-                    // and use Docker Compose to manage deployment
-                    sh 'docker compose up -d' // Note: Ensure you have a docker-compose.yml file in your workspace
+                    // Stop and remove existing containers
+                               sh 'docker-compose down || true'
+                               // Remove any existing containers that may conflict
+                               sh 'docker rm -f db-1 backend frontend || true'
+                               // Recreate and start containers using Docker Compose
+                               sh 'docker-compose up -d'// Note: Ensure you have a docker-compose.yml file in your workspace
                 }
             }
         }
