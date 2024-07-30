@@ -17,7 +17,15 @@ pipeline {
                     credentialsId: 'PFA-PIPELINE'
             }
         }
+        stage('Start Database') {
+                    steps {
+                        script {
 
+                            sh "docker run -d --name db-1 -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=mydb -p 3306:3306 ${env.DOCKER_IMAGE_DB}"
+                            sleep 30 // Wait for the database to initialize
+                        }
+                    }
+                }
         stage('Build Backend') {
             steps {
                 script {
@@ -39,8 +47,6 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    // Pull the database image from Docker Hub
-                    sh "docker pull ${env.DOCKER_IMAGE_DB}"
 
                     // Use Docker Compose to manage deployment
                     sh 'docker-compose -f /var/jenkins_home/workspace/PFA-PIPELINE/docker-compose.yml up -d'
