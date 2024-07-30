@@ -17,20 +17,23 @@ pipeline {
                     credentialsId: 'PFA-PIPELINE'
             }
         }
-        stage('Start Database') {
-                    steps {
-                        script {
 
-                            sh "docker run -d --name db-1 -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=mydb -p 3306:3306 ${env.DOCKER_IMAGE_DB}"
-                            sleep 30 // Wait for the database to initialize
-                        }
-                    }
+        stage('Start Database') {
+            steps {
+                script {
+                    // Pull and start the database container
+                    sh "docker pull ${env.DOCKER_IMAGE_DB}"
+                    sh "docker run -d --name db-1 -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=mydb -p 3306:3306 ${env.DOCKER_IMAGE_DB}"
+                    sleep 30 // Wait for the database to initialize
                 }
+            }
+        }
+
         stage('Build Backend') {
             steps {
                 script {
                     // Build Docker image for the backend
-                    sh "docker run -d -p 9192:9192 --name backend ${env.DOCKER_IMAGE_BACKEND}"
+                    sh "docker run -d -p 9192:9192 --name backend --link db-1 ${env.DOCKER_IMAGE_BACKEND}"
                 }
             }
         }
@@ -39,7 +42,7 @@ pipeline {
             steps {
                 script {
                     // Build Docker image for the frontend
-                    sh "docker run -d -p 3000:3000 --name frontend ${env.DOCKER_IMAGE_FRONTEND}"
+                    sh "docker run -d -p 3000:3000 --name frontend --link db-1 ${env.DOCKER_IMAGE_FRONTEND}"
                 }
             }
         }
@@ -47,7 +50,6 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-
                     // Use Docker Compose to manage deployment
                     sh 'docker-compose -f /var/jenkins_home/workspace/PFA-PIPELINE/docker-compose.yml up -d'
                 }
