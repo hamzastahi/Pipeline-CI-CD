@@ -56,7 +56,7 @@ pipeline {
                 script {
                     // If you have a docker-compose.yml file, ensure it's in the right directory
                     // and use Docker Compose to manage deployment
-                    sh 'docker-compose up -d' // Note: Ensure you have a docker-compose.yml file in your workspace
+                    sh 'docker compose up -d' // Note: Ensure you have a docker-compose.yml file in your workspace
                 }
             }
         }
