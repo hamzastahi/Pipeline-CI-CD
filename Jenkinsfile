@@ -37,7 +37,7 @@ pipeline {
         stage('Build Frontend') {
             steps {
                 script {
-                    sh "docker pull ${env.DOCKER_IMAGE_FRONTEND}"
+                   sh "docker build -t ${env.DOCKER_IMAGE_FRONTEND} -f frontend/sbr-stage/Dockerfile ."
                 }
             }
         }
