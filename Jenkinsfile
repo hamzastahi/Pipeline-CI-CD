@@ -2,7 +2,6 @@ pipeline {
     agent any
 
     environment {
-        // Define environment variables for Docker images
         DOCKER_IMAGE_BACKEND = 'fatimazahraerhmaritlemcani132/pfa-ci-cd-backend:v1.0'
         DOCKER_IMAGE_FRONTEND = 'fatimazahraerhmaritlemcani132/pfa-ci-cd-frontend:v1.0'
         DOCKER_IMAGE_DB = 'fatimazahraerhmaritlemcani132/mysql:v1.0'
@@ -18,7 +17,7 @@ pipeline {
             }
         }
 
-        stage('Build Database') {
+        stage('Pull Database Image') {
             steps {
                 script {
                     sh "docker pull ${env.DOCKER_IMAGE_DB}"
@@ -26,7 +25,7 @@ pipeline {
             }
         }
 
-        stage('Build Backend') {
+        stage('Pull Backend Image') {
             steps {
                 script {
                     sh "docker pull ${env.DOCKER_IMAGE_BACKEND}"
@@ -37,7 +36,8 @@ pipeline {
         stage('Build Frontend') {
             steps {
                 script {
-                   sh "docker build -t ${env.DOCKER_IMAGE_FRONTEND} -f frontend/sbr-stage/Dockerfile ."
+                    // Ensure the correct build context
+                    sh "docker build -t ${env.DOCKER_IMAGE_FRONTEND} -f frontend/sbr-stage/Dockerfile ."
                 }
             }
         }
@@ -45,15 +45,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    sh 'docker compose up -d'
-                }
-            }
-        }
-
-        stage('Check Logs') {
-            steps {
-                script {
-                    sh 'docker logs $(docker ps -q --filter name=frontend)'
+                    sh 'docker-compose up -d'
                 }
             }
         }
@@ -61,7 +53,6 @@ pipeline {
 
     post {
         always {
-            // Clean up workspace after the build
             cleanWs()
         }
     }

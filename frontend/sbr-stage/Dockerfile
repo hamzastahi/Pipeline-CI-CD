@@ -5,7 +5,8 @@ FROM node:20
 WORKDIR /app
 
 # Copy package.json and package-lock.json to the working directory
-COPY package.json package-lock.json ./
+COPY frontend/sbr-stage/package.json frontend/sbr-stage/package-lock.json ./
+
 
 # Install the dependencies
 RUN npm install
