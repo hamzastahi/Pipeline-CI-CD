@@ -21,8 +21,7 @@ pipeline {
         stage('Build Database') {
             steps {
                 script {
-
-                      sh "docker pull ${env.DOCKER_IMAGE_DB}"
+                    sh "docker pull ${env.DOCKER_IMAGE_DB}"
                 }
             }
         }
@@ -30,7 +29,6 @@ pipeline {
         stage('Build Backend') {
             steps {
                 script {
-
                     sh "docker pull ${env.DOCKER_IMAGE_BACKEND}"
                 }
             }
@@ -39,8 +37,7 @@ pipeline {
         stage('Build Frontend') {
             steps {
                 script {
-
-                     sh "docker pull ${env.DOCKER_IMAGE_FRONTEND}"
+                    sh "docker pull ${env.DOCKER_IMAGE_FRONTEND}"
                 }
             }
         }
@@ -48,8 +45,15 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
+                    sh 'docker compose up -d'
+                }
+            }
+        }
 
-                               sh 'docker compose up -d'// Note: Ensure you have a docker-compose.yml file in your workspace
+        stage('Check Logs') {
+            steps {
+                script {
+                    sh 'docker logs $(docker ps -q --filter name=frontend)'
                 }
             }
         }
