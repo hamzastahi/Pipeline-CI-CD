@@ -1,20 +1,20 @@
-# Use the official Node.js image as the base image
+# Utiliser l'image officielle de Node.js comme image de base
 FROM node:20
 
-# Create and set the working directory
+# Créer et définir le répertoire de travail
 WORKDIR /app
 
-# Copy package.json and package-lock.json to the working directory
+# Copier package.json et package-lock.json dans le répertoire de travail
 COPY package.json package-lock.json ./
 
-# Install the dependencies
+# Installer les dépendances
 RUN npm install
 
-# Copy the rest of the application files to the working directory
+# Copier le reste des fichiers de l'application dans le répertoire de travail
 COPY . .
 
-# Expose the port the app runs on
+# Exposer le port sur lequel l'application s'exécute
 EXPOSE 3000
 
-# Start the application
+# Démarrer l'application
 CMD ["npm", "start"]

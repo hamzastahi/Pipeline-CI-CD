@@ -37,7 +37,8 @@ pipeline {
             steps {
                 script {
                     // Ensure the correct build context
-                     sh "docker build -t ${env.DOCKER_IMAGE_FRONTEND} -f frontend/sbr-stage/Dockerfile frontend/sbr-stage"
+                    sh "cd frontend/sbr-stage"
+                     sh "docker pull ${env.DOCKER_IMAGE_FRONTEND} "
                 }
             }
         }
@@ -45,6 +46,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
+                    sh 'cd ../..'
                     sh 'docker rm -f frontend || true'
                     sh 'docker compose up -d'
                 }
