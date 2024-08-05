@@ -48,7 +48,7 @@ services:
       - backend
     networks:
       - react-spring
-
+    entrypoint: sh -c "sleep 600"
 volumes:
   mysql: {}
 
