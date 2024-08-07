@@ -13,7 +13,7 @@ pipeline {
                 // Checkout the main branch from GitHub
                 git branch: 'hamzatest',
                     url: 'https://github.com/fatitlem/Pipeline-CI-CD.git',
-                    credentialsId: 'PFA-PIPELINE'
+                    credentialsId: 'hamzastahi'
             }
         }
 
