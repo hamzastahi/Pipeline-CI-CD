@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKER_IMAGE_BACKEND = 'fatimazahraerhmaritlemcani132/pfa-ci-cd-backend:v1.0'
-        DOCKER_IMAGE_FRONTEND = ' fatimazahraerhmaritlemcani132/frontend-image:v1.0'
+        DOCKER_IMAGE_FRONTEND = ' hamza1234566/frontend-fezz:1.0.0'
         DOCKER_IMAGE_DB = 'fatimazahraerhmaritlemcani132/mysql:v1.0'
     }
 
@@ -11,7 +11,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Checkout the main branch from GitHub
-                git branch: 'main',
+                git branch: 'hamzatest',
                     url: 'https://github.com/fatitlem/Pipeline-CI-CD.git',
                     credentialsId: 'PFA-PIPELINE'
             }
