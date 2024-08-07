@@ -11,7 +11,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Checkout the main branch from GitHub
-                git branch: 'hamzatest',
+                git branch: 'testhamza',
                     url: 'https://github.com/fatitlem/Pipeline-CI-CD.git',
                     credentialsId: 'hamzastahi'
             }
