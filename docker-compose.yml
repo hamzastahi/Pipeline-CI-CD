@@ -41,9 +41,6 @@ services:
     image:  fatimazahraerhmaritlemcani132/frontend-image:v1.0
     ports:
       - "3000:3000"
-    volumes:
-      - ./frontend/sbr-stage:/app
-      - /app/node_modules
     depends_on:
       - backend
     networks:
