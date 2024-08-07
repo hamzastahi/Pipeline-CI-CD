@@ -12,7 +12,7 @@ pipeline {
             steps {
                 // Checkout the main branch from GitHub
                 git branch: 'testhamza',
-                    url: 'https://github.com/fatitlem/Pipeline-CI-CD.git',
+                    url: 'https://github.com/hamzastahi/Pipeline-CI-CD.git',
                     credentialsId: 'hamzastahi'
             }
         }
